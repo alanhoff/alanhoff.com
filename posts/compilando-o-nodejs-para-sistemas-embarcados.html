@@ -9,7 +9,7 @@
   <meta name="description" content="Blog pessoal sobre JavaScript, Node.js, AngularJs, sistemas embarcados e outras cachaças.">
   <meta name="author" content="Alan Hoffmeister <alanhoffmeister@gmail.com>">
 
-  <title>Alan Hoffmeister - Não jogue lixo no npm!</title>
+  <title>Alan Hoffmeister - Compilando o Node.js para sistemas embarcados</title>
 
   <link rel="alternate" type="application/rss+xml" title="RSS" href="https://alanhoff.com/rss.xml">
 
@@ -64,66 +64,100 @@
         
 
   
-  <img src="/assets/img/posts/garbage.jpg" class="img-responsive">
+  <img src="/assets/img/posts/embedded.jpg" class="img-responsive">
   
   <section class="post">
     <header class="entry-header">
       <img class="entry-avatar" alt="Paul Laros" height="52" width="52" src="//www.gravatar.com/avatar/6350d3781efe9d1a3a88542771ee39d4.jpg?s=52">
-      <h1 class="entry-title"><a href="posts/nao-jogue-lixo-no-npm.html">Não jogue lixo no npm!</a></h1>
+      <h1 class="entry-title"><a href="posts/compilando-o-nodejs-para-sistemas-embarcados.html">Compilando o Node.js para sistemas embarcados</a></h1>
       <p class="entry-meta">
-        Postado em 2014-10-21 23:00 | Por <a class="entry-author" href="https://twitter.com/alan_hoff">Alan Hoffmeister</a>
+        Postado em 2015-01-27 19:00 | Por <a class="entry-author" href="https://twitter.com/alan_hoff">Alan Hoffmeister</a>
       </p>
     </header>
     <div class="entry-description">
-        <p>Sim, tudo o que está dentro do seu projeto é empacotado na hora de publicar o
-seu pacote no npm, incluindo seus testes, documentação, imagens, descrição da
-API e possíveis pornografias. Se o npm começar a ficar lento, a culpa é sua!
+        <p>Você sabia que o Node.js pode rodar normalmente dentro da sua Raspbepry Pi ou
+da sua BeagleBoard? O único problema é que não é tão fácil quanto os
+monoclicadores de “Next, Next, Finish” imaginam.
 <!--more--></p>
-<h3 id="os-arquivos-que-o-npm-n-o-precisa">Os arquivos que o npm NÃO precisa</h3>
-<p>Pense um pouco comigo, toda vez que eu utilizo o <code>require(&#39;seu-modulo-lindo&#39;)</code>
-estou usando a documentação do seu módulo? Estou usando os testes dele? Ou pior
-ainda: estou usando o <strong><em>WEBSITE DO PROJETO</em></strong> (sim uma vez vi um tarball com o
-gh-pages do projeto, e não era meu)? Obviamente você não precisa destes itens.
-Então porque deixar esses arquivos na hora de rodar o <code>npm publish</code>?</p>
-<p>Se eu quero realizar os testes do seu projeto, vou fazer o fork do mesmo,
-instalar as dependências de desenvolvimento e rodar o comando de testes. Eu <strong><em>
-não vou</em></strong> baixar o tarball do npm para fazer isso, muito menos para ler a
-documentação.</p>
-<p>Pode parecer besteira para alguns, mas se enviássemos somente os arquivos
-necessários para um ambiente de produção, a instalação dos nossos projetos
-iria demorar menos, iríamos consumir menos banda, o cache local dos pacotes
-também diminuiria. Dica: fale com o seu chefe sobre redução de gastos.</p>
-<h3 id="os-arquivos-que-o-npm-precisa">Os arquivos que o npm precisa</h3>
-<p>Lembre-se destes três arquivos: <code>package.json</code>, <code>readme.md</code> e <code>license</code>.
-Obviamente você também vai precisar de todos os arquivos necessários para seu
-módulo rodar quando o outro cara fizer o <code>require</code> ou compilar binários na hora
-da instalação.</p>
+<p>Por algum motivo obscuro e desconhecido por minha pessoa, a Joyent não gosta
+de disponibilizar binários pré compilados do Node.js para sistemas embarcados,
+igual ela faz para o Linux, Windows, Mac e SunOS.. Isso é uma pena pois
+facilitaria muito a vida das pessoas que querem se aventurar no mundo dos
+sistemas embarcados e construir sistemas dentro de placas do tamanho de um
+cartão de crédito.</p>
+<p>Muitos tutoriais e recursos que encontramos na internet estão desatualizados
+e não são claros quanto ao que fazemos durante o percurso da compilação
+deixando aquele ar de “wtf are those magic words”, por isso resolvi comentar
+um pouco sobre o assunto.</p>
+<p><img src="/assets/img/posts/wtf.gif" alt=""></p>
+<h3 id="antes-de-come-ar">Antes de começar</h3>
+<p>Para que tudo funcione bem precisamos ter certeza que temos todos os requisitos
+abaixo:</p>
 <ul>
-<li><strong><code>package.json</code></strong>, acho que não precisa dar explicação, sem isso nem da para
-publicar.</li>
-<li><strong><code>readme.md</code>,</strong> além de servir para formatar a página do seu módulo no npm,
-também é muito útil quando precisamos consular rapidamente algo utilizando o
-<code>npm show modulo-lindo readme</code>.</li>
-<li><strong><code>license</code></strong> é sempre necessário se você quiser deixar seu pacote dentro das
-normas da sua licença.</li>
+<li>Uma placa com processador capaz de interpretar o conjunto de instruções ARMv7</li>
+<li>Ubuntu 14.10 (achou que iríamos compilar algo no Windows?)</li>
+<li>Boa vontade e paciência</li>
+<li>Pacotes <code>build-essential</code>, <code>curl</code> e <code>xz-util</code> instalado no seu sistema.</li>
 </ul>
-<h3 id="o-npmignore-salvando-voc-">O .npmignore salvando você</h3>
-<p>A primeira opção é utilizar o <code>.gitignore</code>, tudo o que está ali dentro o npm irá
-ignorar na hora de publicar, mas também vai dar trabalho na hora do <code>git push</code>
-pois certamente você vai querer mandar a documentação e os testes para o seu
-repositório, para solucionar isso você pode utilizar o <code>.npmignore</code>, que
-funciona exatamente igual ao <code>.gitignore</code> porém ele só é lido pelo npm na hora
-de publicar um módulo. E aqui vai uma colinha pra você não precisar adicionar
-arquivo por aquivo dentro do seu <code>.npmignore</code></p>
-<pre><code># Primeiro ignoramos tudo
-*
-# Agora permitimos somente os arquivos necessários
-!package.json
-!readme.md
-!license
-!lib/
-</code></pre><p>Pronto, após seguir esses simples passos, você já estará capacitado a parar de
-ferrar com o npm.</p>
+<p>Caso você não esteja rodando esta versão do Linux, pode tentar com qualquer
+outra, tenho certeza que não será complicado. Se tudo der errado, tente
+instalar o Ubuntu 14.10 em uma VM.</p>
+<h3 id="o-toolchain">O toolchain</h3>
+<p>Primeiramente crie uma pasta para servir de diretório de trabalho, com o comando
+<code>mkdir node4arm &amp;&amp; cd node4arm</code>. A primeira coisa que precisamos ter em mãos
+é o compilador compatível com o processador da placa que usaremos, no meu caso
+vou precisar de um compilador com a interface binária (ABI) que compile
+instruções para processadores da família ARMv7, então faremos o download.</p>
+<pre><code class="lang-bash">curl -s url -s http://archlinuxarm.org/builder/xtools/x-tools7h.tar.xz | tar xvJf -
+</code></pre>
+<p>Este comando irá criar uma pasta chamada x-tools7h, dentro da qual exite o
+compilador e as ferramentas que precisamos para transformar o nosso código C/++
+em instruções binárias.</p>
+<p><strong>Dica:</strong> se o conjunto de informações do processador da sua placa não for ARMv7
+ou se você está em dúvida acesse sua placa e em um terminal digite
+<code>less /proc/cpuinfo</code>, este comando vai mostrar na sua tela informações
+importantes sobre o processador da sua placa, depois basta visitar
+<a href="http://archlinuxarm.org/builder/xtools">http://archlinuxarm.org/builder/xtools</a> e baixar a versão correspondente ao seu
+processador.</p>
+<h3 id="o-node-js">O Node.js</h3>
+<p>O próximo passo é baixar o código fonte do Node.js e descompactá-lo, utilize
+este comando:</p>
+<pre><code class="lang-bash">curl -s http://nodejs.org/dist/v0.10.36/node-v0.10.36.tar.gz | tar zxvf -
+</code></pre>
+<p>Usando o comando <code>cd node-v0.10.36</code>, entre na pasta para iniciar a configuração
+e a compilação.</p>
+<h3 id="compilando">Compilando</h3>
+<p>O último passo é setar algumas variáveis de ambiente, algumas flags e compilar
+o binário! Utilize o script abaixo para isso</p>
+<pre><code class="lang-bash"># Dizemos onde estão nossos compiladores
+export PATH=&quot;$(pwd)/../x-tools7h/arm-unknown-linux-gnueabihf/bin:$PATH&quot;
+export TOOL_PREFIX=&quot;arm-unknown-linux-gnueabihf&quot;
+export AR=&quot;${TOOL_PREFIX}-ar&quot;
+export CC=&quot;${TOOL_PREFIX}-gcc&quot;
+export CXX=&quot;${TOOL_PREFIX}-g++&quot;
+export LINK=&quot;${TOOL_PREFIX}-g++&quot;
+export RANLIB=&quot;${TOOL_PREFIX}-ranlib&quot;
+
+# Configuramos o binário que queremos compilar para
+# que seja para sistemas com hard float point e sem snapshot
+./configure --with-arm-float-abi hard --without-snapshot
+
+# Compilar!
+make
+</code></pre>
+<p>Note que usamos algumas flags para a configuração da compilação,
+<code>--with-arm-float-abi hard</code> serve para setarmos a compilação para usar a ABI com
+hard float point, enquanto <code>--whitout-snapshot</code> serve para desabilitar o serviço
+de snapshots da V8, que não é compatível com cross compiling.</p>
+<p>Depois de rodar este script, o seu binário estará localizado na pasta
+<code>./out/Release</code>.</p>
+<h3 id="b-nus">Bônus</h3>
+<p>Para automatizar o processo criei um script que pode ser encontrado <a href="https://alanhoff.com/assets/etc/node-latest-armv7-generic.sh">aqui</a>,
+basta rodá-lo em qualquer pasta vazia com permissões de escrita, ele já faz
+o download da última versão do Node.js e compila o source com todos os cores
+disponíveis na sua máquina. Para executar o script basta executar:</p>
+<pre><code class="lang-bash">curl -s https://alanhoff.com/assets/etc/node-latest-armv7-generic.sh | bash
+</code></pre>
 
         <br />
         <div style="font-size:16px;margin:0 auto;width:300px" class="blockchain-btn"
