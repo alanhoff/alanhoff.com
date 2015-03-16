@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Blog pessoal sobre JavaScript, Node.js, AngularJs, sistemas embarcados e outras cachaças.">
+  <meta name="author" content="Alan Hoffmeister <alanhoffmeister@gmail.com>">
+
+  <title>Alan Hoffmeister - Enviando e-mails com o Node.js</title>
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://alanhoff.com/rss.xml">
+
+  <!-- Fonts -->
+  <link href="//fonts.googleapis.com/css?family=Source+Sans+Pro%3A400%2C400italic%2C700" rel="stylesheet">
+  <link href="//fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
+
+  <!-- Bootstrap core CSS -->
+  <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/assets/css/font-awesome.min.css" rel="stylesheet">
+  <link href="/assets/css/bootstrap-social.css" rel="stylesheet">
+
+  <!-- Styles -->
+  <link href="/assets/css/main.css" rel="stylesheet">
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/monokai_sublime.min.css">
+  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+
+
+</head>
+
+
+  <body>
+
+    <div id="primary" class="col-sm-12">
+      <div class="content">
+      <a href="https://github.com/alanhoff/alanhoff.com"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a>
+
+        <header class="header">
+          <hgroup class="pull-left">
+            <h1 class="site-title">
+              
+              <a rel="home" title="Alan Hoffmeister" href="/">
+                <i class="fa fa-newspaper-o"></i> Alan Hoffmeister
+              </a>
+              
+            </h1>
+          </hgroup>
+          <a href="https://alanhoff.com/rss.xml" class="btn btn-primary pull-right">
+            <i class="fa fa-rss"></i>
+          </a>
+        </header> <!-- /header -->
+
+        
+
+  
+  <img src="/assets/img/posts/email.jpg" class="img-responsive">
+  
+  <section class="post">
+    <header class="entry-header">
+      <img class="entry-avatar" alt="Paul Laros" height="52" width="52" src="//www.gravatar.com/avatar/6350d3781efe9d1a3a88542771ee39d4.jpg?s=52">
+      <h1 class="entry-title"><a href="posts/enviando-email-no-nodejs.html">Enviando e-mails com o Node.js</a></h1>
+      <p class="entry-meta">
+        Postado em 2015-03-15 20:11 | Por <a class="entry-author" href="https://twitter.com/alan_hoff">Alan Hoffmeister</a>
+      </p>
+    </header>
+    <div class="entry-description">
+        <p>Muitos sistemas dependem de envio de e-mails, sejam estes transacionais
+(ativação de conta, confirmação de e-mail, etc..) ou para e-mail marketing. Esta
+tarefa pode ser facilmente executada no Node.js quando utilizamos alguns pacotes
+bem populares da plataforma.
+<!--more--></p>
+<h3 id="o-respons-vel">O responsável</h3>
+<p>Para iniciar com o envio de e-mails na plataforma Node.js, vamos utilizar um dos
+módulos mais famosos e testados, o <a href="https://github.com/andris9/Nodemailer">Nodemailer</a>, com ele é fácil enviar 
+mensagens em unicode, com HTML ou texto puro, com anexos e até imagens
+embarcadas no próprio e-mail.</p>
+<p>Ele já vem com suporte a vários servidores SMTP, incluindo o Gmail, Hotmail,
+Zoho, SendGrid, FastMail, Mandrill, Amazon SES, <a href="https://github.com/andris9/nodemailer-wellknown#supported-services">entre outros</a>… Tudo está
+bem documentado e com exemplos de como fazer.</p>
+<h3 id="o-b-sico-enviando-um-e-mail">O básico, enviando um e-mail</h3>
+<p>Nos exemplos que seguem nesta postagem vamos utilizar sempre o Gmail, porém
+poderia ser qualquer servidor SMTP. Para enviar um e-mail basta poucas linhas:</p>
+<pre><code class="lang-javascript">var nodemailer = require(&#39;nodemailer&#39;);
+
+// O primeiro passo é configurar um transporte para este
+// e-mail, precisamos dizer qual servidor será o encarregado
+// por enviá-lo:
+var transporte = nodemailer.createTransport({
+  service: &#39;Gmail&#39;, // Como mencionei, vamos usar o Gmail
+  auth: {
+    user: &#39;usuario@gmail.com&#39;, // Basta dizer qual o nosso usuário
+    pass: &#39;shhh!!&#39;             // e a senha da nossa conta
+  } 
+});
+
+// Após configurar o transporte chegou a hora de criar um e-mail
+// para enviarmos, para isso basta criar um objeto com algumas configurações
+var email = {
+  from: &#39;usuario@gmail.com&#39;, // Quem enviou este e-mail
+  to: &#39;alanhoffmeister@gmail.com&#39;, // Quem receberá
+  subject: &#39;Node.js ♥ unicode&#39;,  // Um assunto bacana :-) 
+  html: &#39;E-mail foi enviado do &lt;strong&gt;Node.js&lt;/strong&gt;&#39; // O conteúdo do e-mail
+};
+
+// Pronto, tudo em mãos, basta informar para o transporte
+// que desejamos enviar este e-mail
+transporte.sendMail(email, function(err, info){
+  if(err)
+    throw err; // Oops, algo de errado aconteceu.
+
+  console.log(&#39;Email enviado! Leia as informações adicionais: &#39;, info);
+});
+</code></pre>
+<h3 id="anexando-as-coisas">Anexando as coisas</h3>
+<p>É muito fácil enviar e-mails simples, somente com texto ou HTML, mas o que
+acontece quando precisamos anexar documentos, fotos e etc? Continua igualmente
+simples :-)</p>
+<pre><code class="lang-javascript">var email = {
+  from: &#39;usuario@gmail.com&#39;,
+  to: &#39;alanhoffmeister@gmail.com&#39;,
+  subject: &#39;Veja os anexos&#39;,
+  html: &#39;Estou mandando alguns anexos para testar.&#39;
+  attachments: [{ // Basta incluir esta chave e listar os anexos
+    filename: &#39;boleto.pdf&#39;, // O nome que aparecerá nos anexos
+    path: &#39;servidor/boletos/boleto_gerado1234.pdf&#39; // O arquivo será lido neste local ao ser enviado
+  }]
+};
+
+// Pronto, basta enviar!
+transporte.sendMail(email, function(err){
+  if(err)
+    throw err; // Oops, algo de errado aconteceu.
+
+  console.log(&#39;Email enviado!&#39;);
+});
+</code></pre>
+<h3 id="utilizando-o-seu-smtp">Utilizando o seu SMTP</h3>
+<p>É muito comum que algumas pessoas tenham seus próprios servidores, ou possuam
+e-mails em serviços que ainda não estejam configurados no Nodemailer, como o
+HostGator, UOL Host, Locaweb, etc… Para poder utilizar estes servidores basta
+configurar o <code>transporte</code> exatamente como você configuraria em um Outlook ou
+Thunderbird da vida.</p>
+<pre><code class="lang-javascript">var transporte = nodemailer.createTransport({
+  host: &#39;mail.www15.locaweb.com.br&#39;,
+  port: &#39;587&#39;,
+  secure: true,
+  auth: {
+    user: &#39;usuario@seusistema.com&#39;,
+    pass: &#39;shhh!!&#39;
+  } 
+});
+</code></pre>
+<p>Para verificar quais os serviços que já estão pré configurados no Nodemailer,
+basta ler o conteúdo <a href="https://github.com/andris9/nodemailer-wellknown#supported-services">deste link</a>.</p>
+<h3 id="uma-simples-mailing-list">Uma simples mailing list</h3>
+<p>Agora que já sabemos como enviar e-mail, criar um sistema que enviar uma
+notificação para todos nossos usuários deve ser muito fácil, ainda mais
+se usarmos o <a href="http://wiki.locaweb.com.br/pt-br/Blacklist_/_Lista_Negra">handlebars</a> para tornar o e-mail um pouco mais pessoal.</p>
+<pre><code class="lang-javascript">var hbs = require(&#39;handlebars&#39;);
+var nodemailer = require(&#39;nodemailer&#39;);
+
+// Criamos nosso transporte
+var transporte = nodemailer.createTransport({
+  service: &#39;Gmail&#39;,
+  auth: {
+    user: &#39;usuario@gmail.com&#39;,
+    pass: &#39;shhh!!&#39;
+  } 
+});
+
+// Criamos um template bacana para nosso e-mail, com algumas variáveis
+// para deixar o mesmo bem pessoal.
+var template = hbs.compile(&#39;&#39; + 
+  &#39;&lt;h1&gt;Olá {{nome}} {{sobrenome}}!&lt;/h1&gt;&#39; +
+  &#39;&lt;p&gt;É com grande prazer que venho dizer oi!&lt;/p&gt;&#39; +
+  &#39;&lt;small&gt;Clique &lt;a href=&quot;http://seusistema.com.br?desinscrever={{email}}&quot;&gt;aqui&lt;/a&gt; para desinscrever-se.&lt;/small&gt;&#39; +
+  &#39;&#39;);
+
+// Algumas configurações padrões para nossos e-mails
+var config = {
+  remetente: &#39;SeuSistema &lt;contato@seusistema.com.br&gt;&#39;,
+  assunto: &#39;Temos uma super oferta para você!&#39;
+};
+
+// Agora só falta uma lista de usuários para enviar
+var usuarios = [
+  {
+    nome: &#39;Alan&#39;,
+    sobrenome: &#39;Hoffmeister&#39;,
+    email: &#39;alanhoffmeister@gmail.com&#39;
+  },
+  {
+    nome: &#39;Fulado&#39;,
+    sobrenome: &#39;Silva&#39;,
+    email: &#39;fulano@silva.com&#39;
+  },
+  {
+    nome: &#39;Mariazinha&#39;,
+    sobrenome: &#39;Jenovéva&#39;,
+    email: &#39;mari@hotmail.com&#39;
+  }
+];
+
+// Criamos uma função recursiva para enviar todos os e-mails
+function enviar(i){
+  var usuario = usuarios[i]; // Pegamos o usuário da vez
+
+  if(!usuario) // Se usuários for false (undefined), significa que a array já terminou
+    return console.log(&#39;Acabamos de enviar!&#39;); // O return funciona como um break
+
+  // Passamos as variáveis para nosso template
+  var html = template(usuario);
+
+  // Hora de disparar o e-mail usando as configurações pré
+  // definidas e as informações pessoas do usuário
+  transporte.sendMail({
+    from: config.remetente,
+    to: usuario.email,
+    subject: config.assunto,
+    htm: html
+  }, function(err){
+
+    if(err)
+      throw err;
+
+    console.log(&#39;E-mail para %s enviado!&#39;, usuario.email);
+
+    // Enviamos um e-mail para o próximo da fila incrementando
+    // o número que recebemos nesta função
+    enviar(++i);
+  });
+};
+
+// Precisamos chamar a função que criamos
+// passando o primeiro lugar da fila no array
+enviar(0);
+</code></pre>
+<p>Com este exemplo, deve ser muito trivial implementar algo dinâmico que recebe
+os usuários e suas informações diretamente de um banco de dados.</p>
+<h3 id="dores-de-cabe-a">Dores de cabeça</h3>
+<p>Se você está começando agora neste assunto de enviar e-mails prepare-se para
+algumas dores de cabeça. Servidores gratuitos aplicam limites rigorosos,
+justamente, para evitar spammers espertinhos, então se você já está pensando
+em enviar um e-mail usando aquela lista CSV com 5 mil e-mails guardada há anos
+pode tirar seu cavalinho da chuva, certamente irá bater em alguma limitação
+do seu serviço de e-mail.</p>
+<p>Serviços pagos como o SendGrid ou o Amazon SES podem trazer um limite um pouco
+maior, mas seu endereço ainda corre o risco de entrar para uma <a href="http://wiki.locaweb.com.br/pt-br/Blacklist_/_Lista_Negra">blacklist</a>
+caso haja denúncias (clicar no botão “Spam”) por parte dos destinatários. Se
+isso acontecer, seus e-mails podem ser rejeitados automaticamente pelos
+servidores (Gmail, Hotmail, etc..) ou na melhor das hipóteses ele pode cair
+diretamente na pasta de lixo eletrônico sem que o destinatário saiba de nada.</p>
+<p>Sempre siga as duas regras de ouro: </p>
+<ul>
+<li>Contrate um serviço de envio (SendGrid, Amazon SES) ou tenha seu próprio
+servidor.</li>
+<li>Não envie nenhum e-mail que o usuário não esteja esperando receber.</li>
+</ul>
+
+    </div>
+  </section>
+
+  <section class="post">
+    <header class="entry-header">
+      <h1 class="entry-title"><a href="https://unijs.com.br/workshop/restful-apis-nodejs.html">Workshop sobre Node.js</a></h1>
+      <p class="entry-meta">
+        Um pouco de publicidade não mata ninguém :-)
+      </p>
+    </header>
+    <div class="entry-description">
+        <p><strong>Quer aprender a criar APIs de nível empresarial, seguras e escaláveis?</strong> Aprenda de um jeito fácil e prático a criar APIs sólidas e escaláveis utilizando a plataforma Node.js e seus módulos como a base do seu projeto.</p>
+        <div class="col-md-2 col-md-offset-5">
+          <a href="https://unijs.com.br/workshop/restful-apis-nodejs.html" class="btn btn-lg btn-success">Inscrever-se!</a>
+        </div>
+        <br style="clear: both">
+    </div>
+  </section>
+
+  <div class="comments">
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'alanhoffmeister'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+  </div>
+
+
+        <footer class="footer">
+          <p>Conteúdo sob <a href="https://pt.wikipedia.org/wiki/Licen%C3%A7a_ISC">licença ISC</a>. 2014 - Alan Hofmeister</p>
+          <div class="socials-footer">
+            <a class="btn btn-facebook" href="https://www.facebook.com/alan.hoffmeister" title="Facebook">
+              <i class="fa fa-facebook"></i>
+            </a>
+            <a class="btn btn-twitter" href="https://twitter.com/alan_hoff" title="Twitter">
+              <i class="fa fa-twitter"></i>
+            </a>
+            <a class="btn btn-linkedin" href="http://br.linkedin.com/in/alanhoff" title="LinkedIn">
+              <i class="fa fa-linkedin"></i>
+            </a>
+            <a class="btn btn-google-plus" href="https://plus.google.com/+alanhoffmeister" title="Google+">
+              <i class="fa fa-google-plus"></i>
+            </a>
+            <a class="btn btn-github" href="https://github.com/alanhoff" title="GitHub">
+              <i class="fa fa-github"></i>
+            </a>
+            <a class="btn btn-bitbucket" href="https://bitbucket.org/alanhoff" title="Bitbucket">
+              <i class="fa fa-bitbucket"></i>
+            </a>
+          </div> <!-- /.socials-footer -->
+        </footer> <!-- /footer -->
+
+      </div>
+    </div> <!-- /#primary -->
+
+    <!-- Scripts -->
+    <script src="/assets/js/jquery-1.11.0.min.js"></script>
+    <script src="/assets/js/bootstrap.min.js"></script>
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
+<script type="text/javascript">
+  $('code').each(function(){
+    var el = $(this);
+    var content = el.text();
+    var lang = el.attr('class') || '';
+    lang = lang.indexOf('lang-') === 0 ? lang.substring(5) : 'html';
+    el.html(hljs.highlight(lang, content).value);
+  });
+</script>
+
+
+  </body>
+</html>
