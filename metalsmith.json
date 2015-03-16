@@ -15,9 +15,6 @@
         "reverse": true
       }
     },
-    "metalsmith-feed": {
-      "collection": "posts"
-    },
     "metalsmith-markdown": {
       "smartypants": true,
       "gfm": true,
@@ -25,6 +22,9 @@
     },
     "metalsmith-path": true,
     "metalsmith-more": true,
+    "metalsmith-feed": {
+      "collection": "posts"
+    },
     "metalsmith-paginate": {
       "perPage": 5,
       "path": "posts"
