@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Blog pessoal sobre JavaScript, Node.js, AngularJs, sistemas embarcados e outras cachaças.">
+  <meta name="author" content="Alan Hoffmeister <alanhoffmeister@gmail.com>">
+
+  <title>Alan Hoffmeister - Autenticação de dois fatores no Node.js</title>
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://alanhoff.com/rss.xml">
+
+  <!-- Fonts -->
+  <link href="//fonts.googleapis.com/css?family=Source+Sans+Pro%3A400%2C400italic%2C700" rel="stylesheet">
+  <link href="//fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
+
+  <!-- Bootstrap core CSS -->
+  <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/assets/css/font-awesome.min.css" rel="stylesheet">
+  <link href="/assets/css/bootstrap-social.css" rel="stylesheet">
+
+  <!-- Styles -->
+  <link href="/assets/css/main.css" rel="stylesheet">
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/monokai_sublime.min.css">
+  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+
+
+</head>
+
+
+  <body>
+
+    <div id="primary" class="col-sm-12">
+      <div class="content">
+      <a href="https://github.com/alanhoff/alanhoff.com"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a>
+
+        <header class="header">
+          <hgroup class="pull-left">
+            <h1 class="site-title">
+              
+              <a rel="home" title="Alan Hoffmeister" href="/">
+                <i class="fa fa-newspaper-o"></i> Alan Hoffmeister
+              </a>
+              
+            </h1>
+          </hgroup>
+          <a href="https://alanhoff.com/rss.xml" class="btn btn-primary pull-right">
+            <i class="fa fa-rss"></i>
+          </a>
+        </header> <!-- /header -->
+
+        
+
+  
+  <img src="/assets/img/posts/security.jpg" class="img-responsive">
+  
+  <section class="post">
+    <header class="entry-header">
+      <img class="entry-avatar" alt="Paul Laros" height="52" width="52" src="//www.gravatar.com/avatar/6350d3781efe9d1a3a88542771ee39d4.jpg?s=52">
+      <h1 class="entry-title"><a href="posts/autenticacao-em-dois-fatores-no-nodejs.html">Autenticação de dois fatores no Node.js</a></h1>
+      <p class="entry-meta">
+        Postado em 2015-03-22 23:00 | Por <a class="entry-author" href="https://twitter.com/alan_hoff">Alan Hoffmeister</a>
+      </p>
+    </header>
+    <div class="entry-description">
+        <p>Não é mais tão complicado implementar um sistema de autenticação de dois 
+fatores, e usando ferramentas práticas não irá custar nenhum centavamo a mais no
+seu cartão de crédito para deixar os seus usuários (e seu sistema) mais seguros.
+<!--more--></p>
+<p>Para quem ainda não conhece, a <a href="https://en.wikipedia.org/wiki/Two_factor_authentication">autenticação de dois fatores (2FA)</a> nada mais
+é do que um login que necessita uma informação adicional à senha do usuário.
+Alguns sistemas, como o Google por exemplo, podem enviar uma senha ao celular
+do usuário e pedir que que o mesmo digite os caracteres recebidos. O problema
+com o método de SMS é que pode sair caro para algumas empresas, ainda mais com
+o dólar em seu estado atual.</p>
+<h3 id="totp-pode-ser-a-salva-o">TOTP pode ser a salvação</h3>
+<p>Um mecanismo muito inteligente e muito fácil de implementar são as chamadas
+<a href="https://pt.wikipedia.org/wiki/Senha_descart%C3%A1vel">One Time Passwords</a>, que nada mais é do que um hash simples gerado a
+partir de uma chave secreta compartilhada. Neste post vamos focar em uma
+derivação do OTP chamada <a href="https://en.wikipedia.org/wiki/Time-based_One-time_Password_Algorithm">TOTP</a>, a diferença entre o algorítmo OTP é que
+nesta derivação acrescentamos o <a href="https://pt.wikipedia.org/wiki/Era_Unix">Unix Epoc</a>, que é uma medida de tempo. 
+Assim podemos automaticamente gerar uma senha sincronizada com todos que possuem 
+a chave secreta e um relógio sincronizado, esta senha também pode expirar 
+automaticamente dentro de um intervalo de tempo pré estabelecido.</p>
+<p>Além de ter uma implementação mais rápida e barata que o envio de SMS, o TOTP
+também conta com aplicativos mobile gratuitos para que os usuários gerenciem
+suas senhas descartáveis entre todos os sites que possuem esta funcionalidade
+habilitada, o aplicativo que usaremos aqui é o <a href="https://support.google.com/accounts/answer/1066447?hl=pt-BR">Google Autenticator</a>.</p>
+<h3 id="m-o-na-massa">Mão na massa</h3>
+<p>Não basta ler um monte de informações e não aplicar na prática, hoje vamos
+utilizar o aplicativo Google Autenticator e o pacote <a href="https://github.com/markbao/speakeasy">speakeasy</a> do Node.js,
+essas duas ferramentas conseguem gerar as TOTPs a partir de uma chave secreta.
+Não esqueça que o seu aparelho de celular e o seu computador precisam estar 
+com os relógios sincronizados, o que é 99,9% dos casos, mesmo assim vale o
+aviso :-)</p>
+<pre><code class="lang-javascript">var speakeasy = require(&#39;speakeasy&#39;);
+
+// Vamos gerar uma chave secreta e um link para que o usuário possa
+// escanear o QR code e fazer o setup da TOTP no seu device
+var secret = speakeasy.generate_key({
+  google_auth_qr: true // Avisa o speakeasy que queremos um QRCode também
+});
+
+console.log(&#39;Acesse este link e escaneie o QRCode com o Google Authenticator:\n%s&#39;, secret.google_auth_qr);
+
+// Neste exemplo, vamo apenas mostrar na tela o código
+// gerado, ele deve bater com o código gerado pelo seu aparelho
+var codigo = null;
+
+setInterval(function() {
+
+  // Com apenas um comando podemos gerar a senha TOTP, basta utilizar
+  // a mesma chave secreta gerada anteriormente
+  var totp = speakeasy.totp({
+    key: secret.ascii
+  });
+
+  // Cada vez que nossa senha alterar, mostramos na tela
+  if (totp !== codigo)
+    console.log(&#39;Sua nova senha é: %s&#39;, totp);
+
+  codigo = totp;
+}, 100);
+</code></pre>
+<p>Se você continuar olhando o seu terminar, verá que sua senha troca a cada 30
+segundos, o mesmo também irá acontecer no seu Google Authenticator caso você
+tenha feito o setup usando o QRCode.</p>
+<p>Agora não faltam mais motivos para você implementar uma autenticação de dois
+fatores segura, robusta e barata em seu sistema, seus usuários agradecerão :-)</p>
+
+    </div>
+  </section>
+
+  <section class="post">
+    <header class="entry-header">
+      <h1 class="entry-title"><a href="https://unijs.com.br/workshop/restful-apis-nodejs.html">Curso sobre Node.js</a></h1>
+      <p class="entry-meta">
+        Um pouco de publicidade não mata ninguém :-)
+      </p>
+    </header>
+    <div class="entry-description">
+        <p>Gostou deste texto? Gostaria de aprender a fazer APIs robustas e escaláveis utilizando Node.js? Participe do meu novo curso presencial <a href="https://unijs.com.br/workshop/restful-apis-nodejs.html">Workshop de APIs</a> e aprenda de um jeito fácil e prático como criar APIs sólidas e escaláveis para seus projetos ou empresa.</p>
+        <div class="col-md-2 col-md-offset-5">
+          <a href="https://unijs.com.br/workshop/restful-apis-nodejs.html" class="btn btn-lg btn-success">Inscrever-se!</a>
+        </div>
+        <br style="clear: both">
+    </div>
+  </section>
+
+  <div class="comments">
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'alanhoffmeister'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+  </div>
+
+
+        <footer class="footer">
+          <p>Conteúdo sob <a href="https://pt.wikipedia.org/wiki/Licen%C3%A7a_ISC">licença ISC</a>. 2014 - Alan Hofmeister</p>
+          <div class="socials-footer">
+            <a class="btn btn-facebook" href="https://www.facebook.com/alan.hoffmeister" title="Facebook">
+              <i class="fa fa-facebook"></i>
+            </a>
+            <a class="btn btn-twitter" href="https://twitter.com/alan_hoff" title="Twitter">
+              <i class="fa fa-twitter"></i>
+            </a>
+            <a class="btn btn-linkedin" href="http://br.linkedin.com/in/alanhoff" title="LinkedIn">
+              <i class="fa fa-linkedin"></i>
+            </a>
+            <a class="btn btn-google-plus" href="https://plus.google.com/+alanhoffmeister" title="Google+">
+              <i class="fa fa-google-plus"></i>
+            </a>
+            <a class="btn btn-github" href="https://github.com/alanhoff" title="GitHub">
+              <i class="fa fa-github"></i>
+            </a>
+            <a class="btn btn-bitbucket" href="https://bitbucket.org/alanhoff" title="Bitbucket">
+              <i class="fa fa-bitbucket"></i>
+            </a>
+          </div> <!-- /.socials-footer -->
+        </footer> <!-- /footer -->
+
+      </div>
+    </div> <!-- /#primary -->
+
+    <!-- Scripts -->
+    <script src="/assets/js/jquery-1.11.0.min.js"></script>
+    <script src="/assets/js/bootstrap.min.js"></script>
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
+<script type="text/javascript">
+  $('code').each(function(){
+    var el = $(this);
+    var content = el.text();
+    var lang = el.attr('class') || '';
+    lang = lang.indexOf('lang-') === 0 ? lang.substring(5) : 'html';
+    el.html(hljs.highlight(lang, content).value);
+  });
+</script>
+
+
+  </body>
+</html>
