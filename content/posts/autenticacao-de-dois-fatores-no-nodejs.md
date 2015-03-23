@@ -10,7 +10,7 @@ template: post.html
 ---
 
 Não é mais tão complicado implementar um sistema de autenticação de dois 
-fatores, e usando ferramentas práticas não irá custar nenhum centavamo a mais no
+fatores, e usando ferramentas práticas não irá custar nenhum centavo a mais no
 seu cartão de crédito para deixar os seus usuários (e seu sistema) mais seguros.
 <!--more-->
 
