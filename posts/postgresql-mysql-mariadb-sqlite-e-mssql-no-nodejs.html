@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Blog pessoal sobre JavaScript, Node.js, AngularJs, sistemas embarcados e outras cachaças.">
+  <meta name="author" content="Alan Hoffmeister <alanhoffmeister@gmail.com>">
+
+  <title>Alan Hoffmeister - PostgreSQL, MySQL, MariaDB, SQLite e MSSQL no Node.js</title>
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://alanhoff.com/rss.xml">
+
+  <!-- Fonts -->
+  <link href="//fonts.googleapis.com/css?family=Source+Sans+Pro%3A400%2C400italic%2C700" rel="stylesheet">
+  <link href="//fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
+
+  <!-- Bootstrap core CSS -->
+  <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/assets/css/font-awesome.min.css" rel="stylesheet">
+  <link href="/assets/css/bootstrap-social.css" rel="stylesheet">
+
+  <!-- Styles -->
+  <link href="/assets/css/main.css" rel="stylesheet">
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/monokai_sublime.min.css">
+  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+
+
+</head>
+
+
+  <body>
+
+    <div id="primary" class="col-sm-12">
+      <div class="content">
+      <a href="https://github.com/alanhoff/alanhoff.com"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a>
+
+        <header class="header">
+          <hgroup class="pull-left">
+            <h1 class="site-title">
+              
+              <a rel="home" title="Alan Hoffmeister" href="/">
+                <i class="fa fa-newspaper-o"></i> Alan Hoffmeister
+              </a>
+              
+            </h1>
+          </hgroup>
+          <a href="https://alanhoff.com/rss.xml" class="btn btn-primary pull-right">
+            <i class="fa fa-rss"></i>
+          </a>
+        </header> <!-- /header -->
+
+        
+
+  
+  <img src="/assets/img/posts/sql.jpg" class="img-responsive">
+  
+  <section class="post">
+    <header class="entry-header">
+      <img class="entry-avatar" alt="Paul Laros" height="52" width="52" src="//www.gravatar.com/avatar/6350d3781efe9d1a3a88542771ee39d4.jpg?s=52">
+      <h1 class="entry-title"><a href="posts/postgresql-mysql-mariadb-sqlite-e-mssql-no-nodejs.html">PostgreSQL, MySQL, MariaDB, SQLite e MSSQL no Node.js</a></h1>
+      <p class="entry-meta">
+        Postado em 2015-04-27 23:32 | Por <a class="entry-author" href="https://twitter.com/alan_hoff">Alan Hoffmeister</a>
+      </p>
+    </header>
+    <div class="entry-description">
+        <p>Você sabia que também é possível utilizar o Node.js com as bases de dados mais
+utilizadas do mundo? Não só de NoSQL vive o ecossistema de Node.js, existem
+pacotes prontos para que você utilize os bancos que você já possue rodando!
+<!--more--></p>
+<p>É um fato que a plataforma Node.js cresceu ao redor de bancos mais atuais como
+o MongoDB, onde a possibilidade de rodar JavaScript no banco de dados foi um dos
+fatores principais neste acontecimento, porém isto não quer dizer que não
+podemos utilizar bancos SQL ou que nossas ferramentas não estão aptas à
+produção com estas bases, muito pelo contrário.</p>
+<h3 id="sequelize">Sequelize</h3>
+<p>O <a href="http://docs.sequelizejs.com/en/latest">Sequelize</a> é um ORM completo para bancos de dados SQL, incluíndo o
+PostgreSQL, MySQL, MariaDB, SQLite e MSSQL, estre suas features podemo
+destacar:</p>
+<ul>
+<li>Definição de schemas</li>
+<li>Sincronização/remoção de schemas</li>
+<li>Associações de 1:1, 1:M e N:M</li>
+<li>Promises</li>
+<li>Hooks/callbacks/eventos de ciclo de vida</li>
+<li>Transações</li>
+<li>Migrações</li>
+<li>Linha de comando</li>
+</ul>
+<p>Neste post pretendo abordar algumas das utilizações básicas do Sequelize, assim
+você poderá sair daqui e desenvolver uma aplicações utilizando as bases que você
+já conhece ou migrar aplicações que utilizam SQL em outras plataformas.</p>
+<h3 id="setup-b-sico">Setup básico</h3>
+<p>Em todos os nossos exemplos utilizaremos o SQLite v3, por se tratar de um banco
+portátil sem a necessidade de instalação, portando vamos à instalação
+do projeto:</p>
+<pre><code class="lang-bash">$ mkdir teste_sequelize
+$ cd teste_sequelize
+$ npm init # tecle &quot;ENTER&quot; para todas as perguntas para não perder tempo
+$ npm install --save sequelize sqlite3
+</code></pre>
+<p>Depois destes comandos você terá uma pasta pronta para começar a testar os
+códigos que descreverei a seguir.</p>
+<h3 id="seu-primeiro-schema">Seu primeiro schema</h3>
+<p>Dentro da pasta que criamos, crie um arquivo chamado <code>app.js</code> e insira o
+seguinte código dentro:</p>
+<pre><code class="lang-javascript">var Sequelize = require(&#39;sequelize&#39;);
+
+// Precisamos criar uma conexão co o banco de dados atual, o SQLite irá criar
+// este arquivo caso o mesmo não exista ainda
+var db = new Sequelize(&#39;sqlite://db.sqlite&#39;);
+
+// Já podemos definir um schema!
+var Usuario = db.define(&#39;Usuario&#39;, {
+  nome: Sequelize.STRING,
+  sobrenome: Sequelize.STRING,
+  senha: Sequelize.STRING
+  aniversario: Sequelize.DATE
+});
+
+// Para criar esta tabela dentro do banco de dados, precisamos chamar o método
+// sync, ele somente irá criar a tabela caso a mesma ainda não exista, isto
+// também vale para colunas da tabela que definimos
+Usuario.sync().then(function(){
+  console.log(&#39;Tabela de usuários criada!&#39;);
+});
+</code></pre>
+<p>Ao rodar este código você irá perceber várias coisas que acontecem
+<em>automagicamente</em>, vou citar algumas delas caso você não tenha notado:</p>
+<ul>
+<li>O Sequelize se encarrega de criar o banco de dados, raramente você precisará
+digitar alguma query SQL junto ao código ou abrir um cliente gráfico para
+mexer em suas tabelas.</li>
+<li>O método <code>.sync()</code> somente irá criar a tabela caso a mesma ainda não exista,
+o mesmo vale para as colunas de nossa tabela, este método é seguro de usar pois
+nunca irá remover nenhum dado.</li>
+<li>Este ORM trabalha com <a href="https://www.promisejs.org">promises</a>, isto significa que você já terá uma
+ferramenta de controle de fluxo assíncrono padronizada.</li>
+<li>Ele já criou os campos <code>id (INTEGER, KEY AUTOINCREMENT)</code>, 
+<code>createdAt (DATETIME)</code> e <code>updatedAt (DATETIME)</code>, caso isso seja um problema para
+você saiba que existe como <a href="http://docs.sequelizejs.com/en/latest/docs/models/#configuration">desabilitar estas features</a>.</li>
+<li>Toda query que acontece no banco aparece no console para que você entenda o
+que está acontecendo e possa debugar erros com mais facilidade. Esta é outra
+feature que pode ser <a href="http://docs.sequelizejs.com/en/1.7.0/docs/usage/#options">facilmente desabilitada</a>.</li>
+</ul>
+<h3 id="criar-ler-modificar-e-apagar">Criar, ler, modificar e apagar</h3>
+<p>Agora que já temos nossa primeira tabela criada, podemos começar a mexer com os
+dados dentro dela, para isso vamos criar um usuário, modifica-lo e logo mais
+apagar o mesmo.</p>
+<pre><code class="lang-javascript">Usuario.create({
+  nome: &#39;Alan&#39;,
+  sobrenome: &#39;Hoffmeister&#39;,
+  senha: &#39;123&#39;,
+  aniversario: new Date(1989, 9, 10)
+}).then(function(usuario){
+  // Neste ponto o nosso usuário já está criado no banco de dados
+  // verifique o seu terminal para ver qual query o Sequelize executou
+  console.log(&#39;Usuário inserido!&#39;, usuario.get());
+
+  // Agora buscamos por um usuário com o sobrenome &#39;Hoffmeister&#39;, já que
+  // este ORM trabalha com promises, basta retornar uma promise aqui
+  return Usuario.find({
+    where: {
+      senha: &#39;123&#39;
+    }
+  });
+
+}).then(function(usuario){
+  // Aqui a pesquisa já terá retonado, vamos modificar este usuário para a 
+  // data correta e salvar o mesmo no banco de dados.
+  usuario.set({
+    aniversario: new Date(1989, 9, 14)
+  });
+
+  // Novamente, basta retornar uma promise
+  return usuario.save();
+
+}).then(function(usuario){
+  // A instância atualizada do usuário está aqui nesta função, podemos
+  // agora remover este usuário usando o método destroy
+  return usuario.destroy();
+
+}).then(function(){
+  console.log(&#39;Terminamos de criar, pesquisar, atualizar e excluir!&#39;);
+});
+</code></pre>
+<p>Novamente, dê uma olhada em seu console para estudar minuciosamente as queries
+que o Sequelize executou.</p>
+<h3 id="m-todos-customizados-e-hooks">Métodos customizados e hooks</h3>
+<p>Este é um tópico um pouco mais avançado, mas tenho certeza que todos aqueles
+que pretendem administrar um grande banco de dados vai tirar muito proveito de
+algumas facilidades que o Sequelize nos proporciona, em especial os métodos
+customizados e os hooks.</p>
+<pre><code class="lang-javascript">// Vamos modificar um pouco o nosso esquema para que o mesmo crie um hash
+// das senhas digitadas em vez de guardá-las de um jeito inseguro
+var crypto = require(&#39;crypto&#39;);
+var Usuario = db.define(&#39;Usuario&#39;, {
+  nome: Sequelize.STRING,
+  sobrenome: Sequelize.STRING,
+  senha: Sequelize.STRING,
+  aniversario: Sequelize.DATE
+}, {
+
+  // Criamos um método de instância ao declarar valores dentro deste objeto
+  instanceMethods: {
+
+    // Vamos criar uma função que nos ajuda a verificar a senha
+    verificaSenha: function(senha){
+      var hash = crypto.createHash(&#39;sha1&#39;).update(senha).digest(&#39;hex&#39;);
+
+      // Agora basta verificar se a senha que passamos para a verificação
+      // é a mesma senha que está registrada para este usuário
+      return senha === this.get(&#39;senha&#39;);
+    }
+  }  
+
+});
+
+// Não basta ter um método para verificar a senha, também queremos que
+// o schema crie um hash automaticamente quando um usuário for criado
+Usuario.hook(&#39;beforeCreate&#39;, function(usuario, opts, cb){
+
+  // Alteramos o campo &quot;senha&quot; para um hash sha1 da mesma
+  usuario.set({
+    senha: crypto.createHash(&#39;sha1&#39;).update(usuario.get(&#39;senha&#39;)).digest(&#39;hex&#39;)
+  });
+
+  // Chamamos o callback com a instância modificada do usuário
+  cb(null, usuario);
+});
+
+// Agora basta testar o que acabamos de criar
+Usuario.create({
+  nome: &#39;Alan&#39;,
+  sobrenome: &#39;Hoffmeister&#39;,
+  senha: &#39;123&#39;,
+  aniversario: new Date(1989, 9, 10)
+}).then(function(usuario){
+  // Verificamos se criou o hash sha1
+  console.log(&#39;O hash da senha gravada é %s&#39;, usuario.get(&#39;senha&#39;));
+
+  // Também podemos simular um login, testando uma senha qualquer com a senha
+  // gravada no banco de dados através do método que criamos
+  var ok = usuario.verificaSenha(&#39;senha_diferente&#39;);
+
+  console.log(&#39;A senha é igual? %s&#39;, ok ? &#39;Sim&#39; : &#39;Não&#39;);
+
+});
+</code></pre>
+<p><strong>ATENÇÃO:</strong> O hash SHA1 demonstrado aqui serve apenas para situações
+educacionais, ao guardar senhas no banco de dados utilize algoritmos mais
+seguros como o <a href="https://www.npmjs.com/package/bcrypt-nodejs">bcrypt</a> ou o <a href="https://www.npmjs.com/package/scrypt">scrypt</a>.</p>
+<h3 id="transa-es">Transações</h3>
+<p>Outro ponto fundamental de qualquer base SQL são as queries transacionais, o
+Sequelize pode cuidar disto facilmente para você:</p>
+<pre><code class="lang-javascript">// Para iniciar uma transação com o Sequelize, basta chamar o método
+// .transaction() da instância do seu banco de dados
+db.transaction(function(t){
+
+  // Vamos transferir dinheiro de um usuário fictício em um schema
+  // igualmente fictício
+  return Usuario.find(1).then(function(usuario){
+
+    // Retiramos 100 reais do usuário
+    usuario.set(&#39;dinheiro&#39;, usuario.get(&#39;dinheiro&#39;) - 100)
+
+    return usuario.save({transaction: t})
+  }, {transaction: t}).then(function(usuario){
+
+    // Verificamos se a conta dele ainda está positiva
+    if(usuario.get(&#39;dinheiro&#39;) &lt; 0)
+      throw new Error(&#39;Sem fundos suficientes&#39;);
+  });
+
+}).then(function(){
+  console.log(&#39;Dinheiro debitado com sucesso!&#39;);
+}).catch(function(err){
+  console.log(&#39;Não foi possível debitar por: %s&#39;, err.message);
+});
+</code></pre>
+<p>Como podemos ver, o <code>rollback</code> e o <code>commit</code> são gerenciados automaticamente,
+basta levantar um erro com o <code>throw</code> para que a transação seja revertida ou
+não levantar nenhum erro para que a mesma seja aceita e commitada. Para mais
+detalhes acesse <a href="http://docs.sequelizejs.com/en/latest/docs/transactions/">este link</a>.</p>
+<h3 id="associa-es-e-rela-es">Associações e relações</h3>
+<p>Utilizar associações e relações no Sequelize também é algo relativamente
+trivial:</p>
+<pre><code class="lang-javascript">var Animal = db.define(&#39;Animal&#39;, {/* Seu schema */});
+var Tigre = db.define(&#39;Tigre&#39;, {/* Seu schema */});
+
+// Basta relacionar os schemas, o Sequelize automaticamente adicionará
+// o atributo AnimalId que conterá a chave primária do Animal
+Tigre.belongsTo(Animal);
+</code></pre>
+<p>Você pode ver outros exemplos e uma explicação mais detalhada desta
+funcionalidade <a href="http://docs.sequelizejs.com/en/latest/docs/associations/">neste link</a>.</p>
+<h3 id="conclus-o">Conclusão</h3>
+<p>Não precisamos migrar toda uma aplicação já existente para MongoDB ou iniciar
+os estudos em um banco deste gênero para iniciar no mundo do Node.js,
+ferramentas de alta qualidade que trabalham com a tecnologia que você já
+conhece existem sim para esta plataforma. O que você está esperando?</p>
+
+    </div>
+  </section>
+
+  <section class="post">
+    <header class="entry-header">
+      <h1 class="entry-title"><a href="https://unijs.com.br/workshop/restful-apis-nodejs.html">Curso de Node.js em BELO HORIZONTE!</a></h1>
+      <p class="entry-meta">
+        Um pouco de publicidade não mata ninguém :-)
+      </p>
+    </header>
+    <div class="entry-description">
+        <p>Gostou deste texto? Gostaria de aprender a fazer APIs robustas e escaláveis utilizando Node.js? Participe do meu novo curso presencial <a href="https://unijs.com.br/workshop/restful-apis-nodejs.html">Workshop de APIs</a> e aprenda de um jeito fácil e prático como criar APIs sólidas e escaláveis para seus projetos ou empresa.</p>
+        <div class="col-md-2 col-md-offset-5">
+          <a href="https://unijs.com.br/workshop/restful-apis-nodejs.html" class="btn btn-lg btn-success">Inscrever-se!</a>
+        </div>
+        <br style="clear: both">
+    </div>
+  </section>
+
+  <div class="comments">
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'alanhoffmeister'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+  </div>
+
+
+        <footer class="footer">
+          <p>Conteúdo sob <a href="https://pt.wikipedia.org/wiki/Licen%C3%A7a_ISC">licença ISC</a>. 2014 - Alan Hofmeister</p>
+          <div class="socials-footer">
+            <a class="btn btn-facebook" href="https://www.facebook.com/alan.hoffmeister" title="Facebook">
+              <i class="fa fa-facebook"></i>
+            </a>
+            <a class="btn btn-twitter" href="https://twitter.com/alan_hoff" title="Twitter">
+              <i class="fa fa-twitter"></i>
+            </a>
+            <a class="btn btn-linkedin" href="http://br.linkedin.com/in/alanhoff" title="LinkedIn">
+              <i class="fa fa-linkedin"></i>
+            </a>
+            <a class="btn btn-google-plus" href="https://plus.google.com/+alanhoffmeister" title="Google+">
+              <i class="fa fa-google-plus"></i>
+            </a>
+            <a class="btn btn-github" href="https://github.com/alanhoff" title="GitHub">
+              <i class="fa fa-github"></i>
+            </a>
+            <a class="btn btn-bitbucket" href="https://bitbucket.org/alanhoff" title="Bitbucket">
+              <i class="fa fa-bitbucket"></i>
+            </a>
+          </div> <!-- /.socials-footer -->
+        </footer> <!-- /footer -->
+
+      </div>
+    </div> <!-- /#primary -->
+
+    <!-- Scripts -->
+    <script src="/assets/js/jquery-1.11.0.min.js"></script>
+    <script src="/assets/js/bootstrap.min.js"></script>
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
+<script type="text/javascript">
+  $('code').each(function(){
+    var el = $(this);
+    var content = el.text();
+    var lang = el.attr('class') || '';
+    lang = lang.indexOf('lang-') === 0 ? lang.substring(5) : 'html';
+    el.html(hljs.highlight(lang, content).value);
+  });
+</script>
+
+
+  </body>
+</html>
