@@ -176,7 +176,7 @@ var Usuario = db.define('Usuario', {
 
       // Agora basta verificar se a senha que passamos para a verificação
       // é a mesma senha que está registrada para este usuário
-      return senha === this.get('senha');
+      return hash === this.get('senha');
     }
   }  
 
