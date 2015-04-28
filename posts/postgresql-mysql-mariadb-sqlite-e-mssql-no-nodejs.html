@@ -220,7 +220,7 @@ var Usuario = db.define(&#39;Usuario&#39;, {
 
       // Agora basta verificar se a senha que passamos para a verificação
       // é a mesma senha que está registrada para este usuário
-      return senha === this.get(&#39;senha&#39;);
+      return hash === this.get(&#39;senha&#39;);
     }
   }  
 
