@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Blog pessoal sobre JavaScript, Node.js, AngularJs, sistemas embarcados e outras cachaças.">
+  <meta name="author" content="Alan Hoffmeister <alanhoffmeister@gmail.com>">
+
+  <title>Alan Hoffmeister - Como guardar as senhas dos seus usuários</title>
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://alanhoff.com/rss.xml">
+
+  <!-- Fonts -->
+  <link href="//fonts.googleapis.com/css?family=Source+Sans+Pro%3A400%2C400italic%2C700" rel="stylesheet">
+  <link href="//fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
+
+  <!-- Bootstrap core CSS -->
+  <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/assets/css/font-awesome.min.css" rel="stylesheet">
+  <link href="/assets/css/bootstrap-social.css" rel="stylesheet">
+
+  <!-- Styles -->
+  <link href="/assets/css/main.css" rel="stylesheet">
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/monokai_sublime.min.css">
+  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+
+
+</head>
+
+
+  <body>
+
+    <div id="primary" class="col-sm-12">
+      <div class="content">
+      <a href="https://github.com/alanhoff/alanhoff.com"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a>
+
+        <header class="header">
+          <hgroup class="pull-left">
+            <h1 class="site-title">
+              
+              <a rel="home" title="Alan Hoffmeister" href="/">
+                <i class="fa fa-newspaper-o"></i> Alan Hoffmeister
+              </a>
+              
+            </h1>
+          </hgroup>
+          <a href="https://alanhoff.com/rss.xml" class="btn btn-primary pull-right">
+            <i class="fa fa-rss"></i>
+          </a>
+        </header> <!-- /header -->
+
+        
+
+  
+  <img src="/assets/img/posts/password.jpg" class="img-responsive">
+  
+  <section class="post">
+    <header class="entry-header">
+      <img class="entry-avatar" alt="Paul Laros" height="52" width="52" src="//www.gravatar.com/avatar/6350d3781efe9d1a3a88542771ee39d4.jpg?s=52">
+      <h1 class="entry-title"><a href="posts/como-guardar-as-senhas-dos-seus-usuarios.html">Como guardar as senhas dos seus usuários</a></h1>
+      <p class="entry-meta">
+        Postado em 2015-05-02 19:51 | Por <a class="entry-author" href="https://twitter.com/alan_hoff">Alan Hoffmeister</a>
+      </p>
+    </header>
+    <div class="entry-description">
+        <p>Você jamais deve construir um sistema pensando que o mesmo será à prova de
+invasões, bugs, exploits e vulnerabilidade. Pensando desta forma devemos ter
+cuidado com as informações pessoais dos usuários deste sistema, incluindo suas
+senhas.
+<!--more--></p>
+<h3 id="seu-sistema-n-o-infal-vel">Seu sistema não é infalível</h3>
+<p>Imagine que alguma pessoa descubra a senha do seu Gmail, Yahoo! ou Hotmail, se
+você for igual a 75% dos internautas provavelmente usará esta mesma senha para o
+seu Facebook, Twitter, iCloud, no seu computador pessoal, ou ainda pior: na sua
+conta bancária.</p>
+<p>Você pode estar pensando que não é tão fácil assim conseguir senhas de usuários,
+mas o que aprendemos com o parágrafo anterior é que qualquer sistema mal feito
+pode comprometer outros sistemas, até mesmo sistemas de grandes empresas podem
+ser afetados, como por exemplo o <a href="https://lookup.gibsonsec.org">Snapchat</a>, <a href="http://www.zdnet.com/article/find-out-if-your-data-was-leaked-in-the-adobe-hack">Adobe</a>, <a href="http://risky.biz/sosasta">Groupon</a> ou um
+mais recente como o <a href="http://thenextweb.com/apps/2014/10/14/dropbox-passwords-leak-online-alleged-hack">Dropbox</a>, entre outros casos. Se esses dados vazados
+contiverem senhas salvas de um jeito errado é muito provável que o atacante
+consiga acesso à esta senha e inevitavelmente a outros sites no qual o dono
+desta senha está cadastrado.</p>
+<h3 id="n-o-guarde-a-senha-em-texto-puro-no-seu-banco">NÃO guarde a senha em texto puro no seu banco</h3>
+<p>Sabemos que precisamos da senha guardada em algum lugar para poder efetuar o
+login do usuário, mas guardar a senha sem nenhum tipo de proteção é um ato de
+extrema irresponsabilidade.</p>
+<pre><code class="lang-sql">INSERT INTO usuarios (nome, email, senha)
+    VALUES (&#39;Alan&#39;, &#39;alan@gmail.com&#39;, &#39;alan123&#39;);
+</code></pre>
+<p>Um atacante com acesso a este banco não terá nenhuma dificuldade em saber qual
+a senha dos usuários e poderá tentar utilizar as mesmas em outros sites no mesmo
+instante.</p>
+<h3 id="n-o-utilize-criptografia-bidirecional">NÃO utilize criptografia bidirecional</h3>
+<p>Existem dois métodos tradicionais para transformar um texto em algo que é
+impossível de ser lido sem a ajuda de um algoritmo específico. O primeiro método
+é a criptografia bidirecional, neste tipo de criptografia podemos criptografar 
+dados utilizando uma senha única (<a href="https://pt.wikipedia.org/wiki/Algoritmo_de_chave_sim%C3%A9trica">simétrica</a>) ou um par de senhas 
+(<a href="https://pt.wikipedia.org/wiki/Criptografia_de_chave_p%C3%BAblica">assimétrica</a>).</p>
+<pre><code class="lang-javascript">// Pseudocódigo
+var senha_usuario = &#39;123&#39;;
+var chave = &#39;shhh!&#39;;
+
+// Aqui temos uma função que encripta a senha do usuário &#39;123&#39;
+// utilizando uma chave que apenas o servidor possui
+var encriptado = encriptar(senha, chave);
+
+// Não podemos mais ler esta senha
+console.log(encriptado); // dbd014125a4bad51db85f27279f1040a
+
+// Mas podemos desencriptar facilmente utilizando a chave do servidor
+console.log(desencriptar(encriptado, chave)); // 123
+</code></pre>
+<p>O principal ponto deste método é poder encriptar uma informação e depois
+desencriptar a informação criptografada, trazendo assim o texto original.</p>
+<p>Por mais forte que alguns algoritmos de encriptação bidirecional sejam, eles 
+podem ser inúteis em um cenários onde um banco de dados é comprometido, se o
+atacante possui acesso ao banco de dados com as senhas criptografadas é muito
+provável que o mesmo também terá acesso ao código ou à chave de criptografia
+utilizada na encriptação destas senhas, tornando esse método inútil.</p>
+<p>O segundo método de criptografia, e o mais utilizado para guardar senhas de
+forma segura é a <a href="https://pt.wikipedia.org/wiki/Fun%C3%A7%C3%A3o_de_m%C3%A3o_%C3%BAnica">criptografia unidirecional</a>, também chamada de “mão única”.
+Este tipo de criptografia dispensa o uso de chaves e por este motivo não podemos
+recuperar os dados originais.</p>
+<pre><code class="lang-javascript">// Pseudocódigo
+var senha = &#39;123&#39;;
+var hash = md5(senha); // e8d95a51f3af4a3b134bf6bb680a213a
+var input = prompt(&#39;Digite sua senha&#39;, &#39;&#39;);
+
+// Para verificar a senha digitadas, precisamos transformar
+// ela em um hash e comparar com o hash que já temos guardado
+if(md5(input) !== hash){
+  alert(&#39;Senha não confere!&#39;);
+} else {
+  alert(&#39;Senha correta.&#39;);
+}
+</code></pre>
+<p>Como podemos verificar neste pseudocódigo, para saber se o usuário digitou a
+senha corretamente, precisamos transformar a mesma em um hash e comparar com um
+hash guardado no banco de dados anteriormente durante o cadastro deste usuário.
+Se o hash gerado coincidir com o hash guardado, sabemos que a senha digitada
+coincide com a senha que o usuário escolheu.</p>
+<h3 id="n-o-utilize-md5">NÃO utilize MD5</h3>
+<p>O <a href="https://pt.wikipedia.org/wiki/MD5">MD5 é uma função criptográfica</a> unidirecional que transforma um texto em 
+uma informação de 128 bits. Foi utilizado durante muito tempo para guardar as
+senhas de forma segura, mas atualmente ele é considerado fraco pois possue uma
+<a href="http://www.mathstat.dal.ca/~selinger/md5collision">taxa de colisão</a> relativamente alta e é fácil de ser quebrada com o hardware
+existente nos dias de hoje, sem contar que já existem <a href="http://md5cracker.org/">dicionários públicos</a>
+com uma infinidade de textos já quebrados.</p>
+<h3 id="n-o-utilize-salt-fixo">NÃO utilize salt fixo</h3>
+<p>Um outro método muito comum utilizado para proteger as senhas dos usuários, é
+utilizar um “sal” (salt) juntamente com o hash da senha.</p>
+<pre><code class="lang-javascript">// Pseudocódigo
+var senha = &#39;123&#39;;
+var salt = &#39;_SENHA&#39;;
+var hash = md5(senha + salt);
+
+console.log(hash); // 83d5ff4186df542b7ad353599fe92bde
+</code></pre>
+<p>Este método pode ser utilizado para evitar <a href="https://en.wikipedia.org/wiki/Dictionary_attack">ataques de dicionário</a> e
+<a href="https://pt.wikipedia.org/wiki/Rainbow_table">rainbow tables</a>, onde o atacante possui uma lista de hash já computados
+com senhas comumente usadas.</p>
+<p>Embora inteligente, o salt fixo é falho pois o atacante pode facilmente ajustar
+o seu dicionário ou rainbow table utilizando o salt usado pelo sistema. Além do 
+mais, dois usuários com a mesma senha ainda terão o mesmo hash no seu banco de 
+dados, facilitando a vida do atacante.</p>
+<p>Por este motivo é recomendado que cada senha tenha o seu próprio salt, e que
+também esse salt seja alterado juntamente com a senha do usuário quando o mesmo
+solicitar esta alteração.</p>
+<h3 id="n-o-limite-a-quantidade-de-caracteres">NÃO limite a quantidade de caracteres</h3>
+<p>Em muitos sites ainda é possível encontrar formulários de cadastro onde existe
+um limite muito baixo para a quantidade de caracteres que um usuário pode
+escolher no campo da senha. Não imponha limites para este campo mas utilize
+uma quantidade máxima de caracteres bem alta, em torno de 160. Senhas muito
+longas podem levar a <a href="http://arstechnica.com/security/2013/09/16/long-passwords-are-good-but-too-much-length-can-be-bad-for-security">DoS em algumas circunstâncias</a>.</p>
+<h3 id="n-o-invente-seu-pr-prio-algoritmo">NÃO invente seu próprio algoritmo</h3>
+<p>Embora seja tentador para alguns programadores iniciantes, inventar o seu
+próprio algoritmo de hash pode levar à algumas vulnerabilidades que você não foi
+capaz de imaginar ou prever naquele determinado momento, por isso utilize
+métodos e bibliotecas já testadas em produção. Lembre-se da velha história: duas
+cabeças pensam melhor que uma.</p>
+<h3 id="n-o-envie-a-senha-do-seu-usu-rio-por-e-mail">NÃO envie a senha do seu usuário por e-mail</h3>
+<p>Este tópico fala um pouco sobre lógica e menos sobre programação. No final do 
+ano passado recebi um e-mail da Oi com os seguintes dizeres:</p>
+<pre><code class="lang-text">Parabéns Aln Hoffmeister,
+
+Seu registro para a utilização da rede Oi WiFi foi realizado com sucesso.
+
+Lembramos que este cadastro não consiste na obrigação de pagamentos de taxas de 
+serviços, somente se você adquirir algum de nossos produtos.
+
+Para trocar sua senha acesse a área do usuário em http://www.oiwifi.com.br
+
+Dados informados:
+
+Login: alanxxxx
+Senha: xxxxxxxxxxxx
+</code></pre>
+<p>E lá estava no e-mail, a senha que eu havia escolhido para realizar o login no
+sistema deles. Isso me leva a pensar algumas coisas:</p>
+<ol>
+<li>Minha senha circulou sem proteção pelo sistema deles.</li>
+<li>Será que estão guardando ela de um jeito correto?</li>
+<li>E se este e-mail foi logado por algum servidor no meio do caminho?</li>
+<li>E se alguém acessar minha conta de e-mail enquanto eu não estiver na frente
+do computador?</li>
+</ol>
+<p>Por estes e outros motivos, não preciso nem mencionar o quão irresponsável esta
+pratica é. Sem contar a última vez que esqueci minha senha no McDonald’s Clube
+da Entrega e ao clicar em “Recuperar Senha”, eles mandaram um e-mail <strong>COM A 
+MINHA SENHA</strong>.</p>
+<h3 id="utilize-algoritmos-com-ajuste-de-fator-de-trabalho">UTILIZE algoritmos com ajuste de fator de trabalho</h3>
+<p>Chega de dizer o que não fazer, vamos começar a pensar agora em métodos eficazes
+para proteger suas senhas em seu banco.</p>
+<p>Algumas bibliotecas e algoritmos populares possuem um fator de trabalho. Isso
+quer dizer que é possível ajustar o tempo, tamanho do hash gerado, ou a 
+quantidade de recursos do hardware que será utilizado na hora de computar o 
+hash de uma senha.</p>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/PBKDF2">PBKDF2</a>: função criptográfica onde podemos informar um salt, o número de
+iterações desejadas e o tamanho da chave derivada a ser criada.</li>
+<li><a href="https://pt.wikipedia.org/wiki/Bcrypt">bcrypt</a>: gera um hash baseado no <a href="https://pt.wikipedia.org/wiki/Blowfish">Blowfish</a>, podemos alterar o fator
+de trabalho deste método especificando o número de rodadas utilizadas para o
+hash da senha antes da mesma estar pronta.</li>
+<li><a href="https://en.wikipedia.org/wiki/Scrypt">scrypt</a>: outra função criptográfica que, assim como o PBKDF2, gera uma 
+chave derivada. Podemos ajustar o fator de trabalho desta função indicando a 
+quantidade de memória que ela deve utilizar para gerar a chave derivada.</li>
+</ul>
+<p>Estes algoritmos ajustáveis são fundamentais para a segurança de um sistema
+a longo prazo. A cada ano a potência dos hardwares aumentam e com isso diminui
+o tempo que um atacante demora para quebrar uma senha, com estes algoritmos
+podemos alterar o poder necessário para computar/quebrar a senha juntamente com
+a evolução do hardware.</p>
+<p>É muito provável que existam bibliotecas que implementam estas tecnologias na 
+linguagem/plataforma que você trabalha, por isso é importante que você faça uma
+pesquisa e busque as bibliotecas mais atualizadas e utilizadas.</p>
+<h3 id="desenhe-seu-sistema-para-lidar-com-falhas-de-seguran-a">DESENHE seu sistema para lidar com falhas de segurança</h3>
+<p>Em um eventual cenário de falha ou roubo de informações, é importante assegurar
+que o seu sistema possa continuar rodando de forma mais segura, você poderá
+utilizar os seguintes passos:</p>
+<ul>
+<li>Invalide tokens anteriores ao ataque.</li>
+<li>Desabilite a alteração das contados de seus usuários, como a pergunta secreta
+ou a autenticação de duas vias.</li>
+<li>Atualize suas funções de proteção, credenciamento e login</li>
+<li>Atualize qualquer chave ou salt que o sistema estiver utilizando</li>
+<li>Force a atualização das senhas no próximo login de todos os usuários</li>
+<li>Entre outras…</li>
+</ul>
+<p>Como eu disse anteriormente, não podemos desenvolver um sistema 100% infalível,
+mas com toda certeza podemos desenvolver este mesmo sistema pensando em um
+eventual cenário como este.</p>
+<h3 id="pesquise-aprenda-e-mantenha-se-atualizado">PESQUISE, aprenda e mantenha-se atualizado</h3>
+<p>Quem lida com segurança da informação sabe que um dos melhores métodos para
+manter-se à frente dos atacantes é ficar por dentro de todas as notícias da
+área e buscas aprender sobre os métodos atuais de segurança.</p>
+<ul>
+<li><a href="https://www.youtube.com/watch?v=8ZtInClXe1Q">How NOT to Store Passwords! - Computerphile</a></li>
+<li><a href="https://www.youtube.com/watch?v=b4b8ktEV4Bg">Hashing Algorithms and Security - Computerphile</a></li>
+<li><a href="https://www.owasp.org/index.php/Password_Storage_Cheat_Sheet">OWASP Password Storage Cheat Sheet</a></li>
+<li><a href="https://www.youtube.com/watch?v=z25UlNNHGTw">How Safe is Your Password? - Brit Lab</a></li>
+<li><a href="https://www.youtube.com/watch?v=-h8TRSWiQng">Early Data Encryption Software - Tomorrow’s World</a></li>
+<li><a href="http://blog.codinghorror.com/youre-probably-storing-passwords-incorrectly/">You’re Probably Storing Passwords Incorrectly</a></li>
+</ul>
+
+    </div>
+  </section>
+
+  <section class="post">
+    <header class="entry-header">
+      <h1 class="entry-title"><a href="https://unijs.com.br/workshop/restful-apis-nodejs.html">Curso de Node.js em BELO HORIZONTE!</a></h1>
+      <p class="entry-meta">
+        Um pouco de publicidade não mata ninguém :-)
+      </p>
+    </header>
+    <div class="entry-description">
+        <p>Gostou deste texto? Gostaria de aprender a fazer APIs robustas e escaláveis utilizando Node.js? Participe do meu novo curso presencial <a href="https://unijs.com.br/workshop/restful-apis-nodejs.html">Workshop de APIs</a> e aprenda de um jeito fácil e prático como criar APIs sólidas e escaláveis para seus projetos ou empresa.</p>
+        <div class="col-md-2 col-md-offset-5">
+          <a href="https://unijs.com.br/workshop/restful-apis-nodejs.html" class="btn btn-lg btn-success">Inscrever-se!</a>
+        </div>
+        <br style="clear: both">
+    </div>
+  </section>
+
+  <div class="comments">
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'alanhoffmeister'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+  </div>
+
+
+        <footer class="footer">
+          <p>Conteúdo sob <a href="https://pt.wikipedia.org/wiki/Licen%C3%A7a_ISC">licença ISC</a>. 2014 - Alan Hofmeister</p>
+          <div class="socials-footer">
+            <a class="btn btn-facebook" href="https://www.facebook.com/alan.hoffmeister" title="Facebook">
+              <i class="fa fa-facebook"></i>
+            </a>
+            <a class="btn btn-twitter" href="https://twitter.com/alan_hoff" title="Twitter">
+              <i class="fa fa-twitter"></i>
+            </a>
+            <a class="btn btn-linkedin" href="http://br.linkedin.com/in/alanhoff" title="LinkedIn">
+              <i class="fa fa-linkedin"></i>
+            </a>
+            <a class="btn btn-google-plus" href="https://plus.google.com/+alanhoffmeister" title="Google+">
+              <i class="fa fa-google-plus"></i>
+            </a>
+            <a class="btn btn-github" href="https://github.com/alanhoff" title="GitHub">
+              <i class="fa fa-github"></i>
+            </a>
+            <a class="btn btn-bitbucket" href="https://bitbucket.org/alanhoff" title="Bitbucket">
+              <i class="fa fa-bitbucket"></i>
+            </a>
+          </div> <!-- /.socials-footer -->
+        </footer> <!-- /footer -->
+
+      </div>
+    </div> <!-- /#primary -->
+
+    <!-- Scripts -->
+    <script src="/assets/js/jquery-1.11.0.min.js"></script>
+    <script src="/assets/js/bootstrap.min.js"></script>
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
+<script type="text/javascript">
+  $('code').each(function(){
+    var el = $(this);
+    var content = el.text();
+    var lang = el.attr('class') || '';
+    lang = lang.indexOf('lang-') === 0 ? lang.substring(5) : 'html';
+    el.html(hljs.highlight(lang, content).value);
+  });
+</script>
+
+
+  </body>
+</html>
