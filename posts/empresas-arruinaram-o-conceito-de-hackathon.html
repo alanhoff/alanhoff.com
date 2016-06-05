@@ -9,7 +9,7 @@
   <meta name="description" content="Blog pessoal sobre JavaScript, Node.js, AngularJs, sistemas embarcados e outras cachaças.">
   <meta name="author" content="Alan Hoffmeister <alanhoffmeister@gmail.com>">
 
-  <title>Alan Hoffmeister - Compilando o Node.js para sistemas embarcados</title>
+  <title>Alan Hoffmeister - As empresas arruinaram o conceito de hackathon</title>
 
   <link rel="alternate" type="application/rss+xml" title="RSS" href="https://alanhoff.com/rss.xml">
 
@@ -63,100 +63,88 @@
         
 
   
-  <img src="/assets/img/posts/embedded.jpg" class="img-responsive">
+  <img src="/assets/img/posts/scumbag-boss.jpg" class="img-responsive">
   
   <section class="post">
     <header class="entry-header">
       <img class="entry-avatar" alt="Paul Laros" height="52" width="52" src="//www.gravatar.com/avatar/6350d3781efe9d1a3a88542771ee39d4.jpg?s=52">
-      <h1 class="entry-title"><a href="posts/compilando-o-nodejs-para-sistemas-embarcados.html">Compilando o Node.js para sistemas embarcados</a></h1>
+      <h1 class="entry-title"><a href="posts/empresas-arruinaram-o-conceito-de-hackathon.html">As empresas arruinaram o conceito de hackathon</a></h1>
       <p class="entry-meta">
-        Postado em 2015-01-27 19:00 | Por <a class="entry-author" href="https://twitter.com/alan_hoff">Alan Hoffmeister</a>
+        Postado em 2016-06-05 02:42 | Por <a class="entry-author" href="https://twitter.com/alan_hoff">Alan Hoffmeister</a>
       </p>
     </header>
     <div class="entry-description">
-        <p>Você sabia que o Node.js pode rodar normalmente dentro da sua Raspbepry Pi ou
-da sua BeagleBoard? O único problema é que não é tão fácil quanto os
-monoclicadores de “Next, Next, Finish” imaginam.
+        <p>Quanto custa a uma empresa inovar para atrair mais clientes ou não perder os
+clientes antigos? Pizza gratuita e um brinquedinho da moda para o primeiro
+colocado.
 <!--more--></p>
-<p>Por algum motivo obscuro e desconhecido por minha pessoa, a Joyent não gosta
-de disponibilizar binários pré compilados do Node.js para sistemas embarcados,
-igual ela faz para o Linux, Windows, Mac e SunOS.. Isso é uma pena pois
-facilitaria muito a vida das pessoas que querem se aventurar no mundo dos
-sistemas embarcados e construir sistemas dentro de placas do tamanho de um
-cartão de crédito.</p>
-<p>Muitos tutoriais e recursos que encontramos na internet estão desatualizados
-e não são claros quanto ao que fazemos durante o percurso da compilação
-deixando aquele ar de “wtf are those magic words”, por isso resolvi comentar
-um pouco sobre o assunto.</p>
-<p><img src="/assets/img/posts/wtf.gif" alt=""></p>
-<h3 id="antes-de-come-ar">Antes de começar</h3>
-<p>Para que tudo funcione bem precisamos ter certeza que temos todos os requisitos
-abaixo:</p>
+<h2 id="uma-hist-ria-recorrente">Uma história recorrente</h2>
+<p>Era uma vez uma ideia simples: juntar várias equipes de programadores em um
+local comum com o objetivo de competir. As regras são simples: não traga nada
+pronto de casa. Toda e qualquer linha de código, programa instalado, container
+rodado - descreva sua stack favorita aqui - precisa ser feito dentro do prazo
+de 48h horas da duração do evento. O tema é apresentado e cada equipe deve
+iniciar ferozmente a implementação da melhor solução possível. O objetivo?
+Glória eterna - ou pelo menos até segunda-feira.</p>
+<p>Para sustentar todas as calorias consumidas pelos pensamentos turbinados de
+cada indivíduo naquele local nada melhor que uma pizza. Em alguns casos pode
+até ter energético gratuito - vocês sabem quanto custa um RedBull? - durante
+o evento inteiro. Quem resiste à alimentação gratuita e infinita durante um
+final de semana inteiro?</p>
+<p>No final das 48 horas estão todos cansados e alguns em estado semi-vivo pois o
+cheiro já indica estágio inicial de putrefação - ninguém lembra de levar
+desodorante. Lá está sua equipe sendo avaliada por um grupo de supostos
+entendedores de <code>{{ digite_aqui_alguma_coisa }}</code> que você nunca viu na vida mas
+são os melhores na área da variável anterior.</p>
+<p>Parabéns! Sua equipe foi a vencedora e todos ganharam algum prêmio pelo esforço.
+Esse prêmio é variado podendo ser dinheiro até um gadget que é super bacana mas
+vai ficar inutilmente guardado como um troféu. No final das contas todos
+tiveram um final de semana mágico junto com os amigos. Muitas risadas e pizzas.</p>
+<h2 id="what-if-">What if…</h2>
+<p>Obviamente sempre existe aquele dedo podre, você sabe muito bem do que estou
+falando: alguém que perverte uma ideia <em>imperversível</em>. Pagar um punhado de pizza
+é muito mais barato e consome menos calorias do que alocar uma equipe que
+ficará durante um tempo indeterminado focada em solucionar um problema ou
+implementar uma ideia revolucionária que fará o caixa da empresa voltar aos
+tempos de glória.</p>
+<p>“Não, eles não seriam capazes de fazer isso…” mas sim. Você está pensando
+de forma errada. Já se perguntou o que acontece com o seu código depois daquele
+hackathon? Você acompanha nas notícias quais soluções ou inovações a empresa que
+hospedou o seu hackathon lançou recentemente? Multiplique este pensamento pela
+quantidade de pessoas e códigos/soluções geradas durante o período do evento.
+Parabéns! Você ajudou uma empresa a manter-se - no pior cenário imaginável -
+lucrativa durante gerações. Mas não se preocupe pois você ganhou pizza de graça
+para fazer isso. Ah! Um gadget também.</p>
+<h2 id="voc-est-sendo-exagerado">Você está sendo exagerado</h2>
+<p>Sim, estou mesmo mas é de propósito. Já participei de inúmeros hackathons,
+vários deles foram ótimos e na verdade não me importaria de ver uma ideia que
+tive, sendo implementada por alguém e virando sucesso por aí. Sempre que
+publico um código tento atribuir a licença mais permissiva possível para
+garantir que qualquer pessoa que queria usar não tenha nenhum tipo de
+preocupação. Incluindo toda e qualquer informação contida neste blog.</p>
+<p>Não posso dizer que todos pensam assim - nem quero. Cada um deve ter sua
+opinião e deve buscar diariamente aperfeiçoar a mesma, independente do assunto.
+O que realmente me deixa irritado é quando uma empresa faz isso propositalmente
+e nem faz questão de esconder. O título do hackathon diz claramente que o
+objetivo é fazer a empresa hospedeira lucrar mais. O alvo do hackathon?
+Estudantes brasileiros de TI.</p>
+<p>Se você acha que é fácil ter uma vida satisfatoriamente plena dentro da área de
+TI nas terras brasileiras então peço desculpas, mas você está mentindo para si
+mesmo. Acrescente o fato de que você é um estudante que, no melhor dos casos,
+trabalha durante o dia para pagar a faculdade durante a noite. Não… Não é
+justo que você gaste um final de semana aumentando os lucros de uma empresa,
+avaliada na casa dos bilhões, para ganhar um gadget no final do evento.</p>
+<p>Ok, ninguém é obrigado a participar. As regras são claras e ninguém vai deixar
+de ir em um hackathon por ter lido um <em>rant</em> qualquer sobre o tema em um blog
+aleatório nas interwebs. Apenas peço que lembre: toda vez que você participa de
+um hackathon deste tipo você somente ajuda a fixar a ideia de que seus
+companheiros de TI não valem mais do que o pedaço de pizza fria que você acabou
+de engolir.</p>
+<p><img src="/assets/img/posts/scumbag-gerdau.jpg" class="img-responsive" style="margin: 20px 0;"></p>
 <ul>
-<li>Uma placa com processador capaz de interpretar o conjunto de instruções ARMv7</li>
-<li>Ubuntu 14.10 (achou que iríamos compilar algo no Windows?)</li>
-<li>Boa vontade e paciência</li>
-<li>Pacotes <code>build-essential</code>, <code>curl</code> e <code>xz-util</code> instalado no seu sistema.</li>
+<li>Página do hackathon: <a href="https://goo.gl/eX67tP">https://goo.gl/eX67tP</a></li>
+<li>Regulamento: <a href="https://goo.gl/sSGncO">https://goo.gl/sSGncO</a></li>
 </ul>
-<p>Caso você não esteja rodando esta versão do Linux, pode tentar com qualquer
-outra, tenho certeza que não será complicado. Se tudo der errado, tente
-instalar o Ubuntu 14.10 em uma VM.</p>
-<h3 id="o-toolchain">O toolchain</h3>
-<p>Primeiramente crie uma pasta para servir de diretório de trabalho, com o comando
-<code>mkdir node4arm &amp;&amp; cd node4arm</code>. A primeira coisa que precisamos ter em mãos
-é o compilador compatível com o processador da placa que usaremos, no meu caso
-vou precisar de um compilador com a interface binária (ABI) que compile
-instruções para processadores da família ARMv7, então faremos o download.</p>
-<pre><code class="lang-bash">curl -s url -s http://archlinuxarm.org/builder/xtools/x-tools7h.tar.xz | tar xvJf -
-</code></pre>
-<p>Este comando irá criar uma pasta chamada x-tools7h, dentro da qual exite o
-compilador e as ferramentas que precisamos para transformar o nosso código C/++
-em instruções binárias.</p>
-<p><strong>Dica:</strong> se o conjunto de informações do processador da sua placa não for ARMv7
-ou se você está em dúvida acesse sua placa e em um terminal digite
-<code>less /proc/cpuinfo</code>, este comando vai mostrar na sua tela informações
-importantes sobre o processador da sua placa, depois basta visitar
-<a href="http://archlinuxarm.org/builder/xtools">http://archlinuxarm.org/builder/xtools</a> e baixar a versão correspondente ao seu
-processador.</p>
-<h3 id="o-node-js">O Node.js</h3>
-<p>O próximo passo é baixar o código fonte do Node.js e descompactá-lo, utilize
-este comando:</p>
-<pre><code class="lang-bash">curl -s http://nodejs.org/dist/v0.10.36/node-v0.10.36.tar.gz | tar zxvf -
-</code></pre>
-<p>Usando o comando <code>cd node-v0.10.36</code>, entre na pasta para iniciar a configuração
-e a compilação.</p>
-<h3 id="compilando">Compilando</h3>
-<p>O último passo é setar algumas variáveis de ambiente, algumas flags e compilar
-o binário! Utilize o script abaixo para isso</p>
-<pre><code class="lang-bash"># Dizemos onde estão nossos compiladores
-export PATH=&quot;$(pwd)/../x-tools7h/arm-unknown-linux-gnueabihf/bin:$PATH&quot;
-export TOOL_PREFIX=&quot;arm-unknown-linux-gnueabihf&quot;
-export AR=&quot;${TOOL_PREFIX}-ar&quot;
-export CC=&quot;${TOOL_PREFIX}-gcc&quot;
-export CXX=&quot;${TOOL_PREFIX}-g++&quot;
-export LINK=&quot;${TOOL_PREFIX}-g++&quot;
-export RANLIB=&quot;${TOOL_PREFIX}-ranlib&quot;
-
-# Configuramos o binário que queremos compilar para
-# que seja para sistemas com hard float point e sem snapshot
-./configure --with-arm-float-abi hard --without-snapshot
-
-# Compilar!
-make
-</code></pre>
-<p>Note que usamos algumas flags para a configuração da compilação,
-<code>--with-arm-float-abi hard</code> serve para setarmos a compilação para usar a ABI com
-hard float point, enquanto <code>--whitout-snapshot</code> serve para desabilitar o serviço
-de snapshots da V8, que não é compatível com cross compiling.</p>
-<p>Depois de rodar este script, o seu binário estará localizado na pasta
-<code>./out/Release</code>.</p>
-<h3 id="b-nus">Bônus</h3>
-<p>Para automatizar o processo criei um script que pode ser encontrado <a href="https://alanhoff.com/assets/etc/node-latest-armv7-generic.sh">aqui</a>,
-basta rodá-lo em qualquer pasta vazia com permissões de escrita, ele já faz
-o download da última versão do Node.js e compila o source com todos os cores
-disponíveis na sua máquina. Para executar o script basta executar:</p>
-<pre><code class="lang-bash">curl -s https://alanhoff.com/assets/etc/node-latest-armv7-generic.sh | bash
-</code></pre>
 
     </div>
   </section>
